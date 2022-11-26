@@ -20,8 +20,14 @@
  *    ['Array', 'Number', 'string'], 'Date'    => -1
  *    [0, 1, 2, 3, 4, 5], 5    => 5
  */
-function findElement(/* arr, value */) {
-  throw new Error('Not implemented');
+
+function findElement(arr, value) {
+  let index = -1;
+  arr.reduce((accumulator, currentValue, currentIndex) => {
+    if (currentValue === value) index = currentIndex;
+    return accumulator;
+  }, -1);
+  return index;
 }
 
 /**
@@ -35,8 +41,16 @@ function findElement(/* arr, value */) {
  *    2 => [ 1, 3 ]
  *    5 => [ 1, 3, 5, 7, 9 ]
  */
-function generateOdds(/* len */) {
-  throw new Error('Not implemented');
+function generateOdds(len) {
+  const arr = new Array(len);
+  arr.fill(1);
+  let i = 0;
+
+  return arr.map(() => {
+    const x = i * 2 + 1;
+    i += 1;
+    return x;
+  });
 }
 
 
@@ -52,8 +66,9 @@ function generateOdds(/* len */) {
  *    [0, 1, 2, 3, 4, 5] => [0, 1, 2, 3, 4, 5,   0, 1, 2, 3, 4, 5]
  *    [] => []
  */
-function doubleArray(/* arr */) {
-  throw new Error('Not implemented');
+function doubleArray(arr) {
+  const arr2 = arr.copyWithin();
+  return arr2.concat(arr);
 }
 
 
