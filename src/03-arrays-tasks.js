@@ -542,8 +542,13 @@ function getIntervalArray(start, end) {
  *   [ 'a', 'a', 'a', 'a' ]  => [ 'a' ]
  *   [ 1, 1, 2, 2, 3, 3, 4, 4] => [ 1, 2, 3, 4]
  */
-function distinct(/* arr */) {
-  throw new Error('Not implemented');
+function distinct(arr) {
+  const res = [];
+  arr.map((x) => {
+    if (!res.some((y) => y === x)) res.push(x); // если x не в наборе - добавить туда и return true
+    return x;
+  });
+  return res;
 }
 
 /**
@@ -576,8 +581,8 @@ function distinct(/* arr */) {
  *    "Poland" => ["Lodz"]
  *   }
  */
-function group(/* array, keySelector, valueSelector */) {
-  throw new Error('Not implemented');
+function group(array, keySelector, valueSelector) {
+
 }
 
 
