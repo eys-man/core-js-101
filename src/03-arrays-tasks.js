@@ -581,8 +581,29 @@ function distinct(arr) {
  *    "Poland" => ["Lodz"]
  *   }
  */
-function group(/* array, keySelector, valueSelector */) {
-  throw new Error('Not implemented');
+function group(array, keySelector, valueSelector) {
+  array.sort((a, b) => {
+    if (a[keySelector] < b[keySelector]) return -1;
+    if (a[keySelector] > b[keySelector]) return 1;
+    if (a[valueSelector] < b[valueSelector]) return -1; // если по ключу равны
+    return 1;
+  });
+  // массив отсортирован
+
+  const res = new Map();
+  let key = '';
+
+  array.map((item) => {
+    key = keySelector(item);
+    if (res.has(key)) {
+      const x = res.get(key);
+      x.push(valueSelector(item)); // добавляем в массив значений
+    } else res.set(key, [valueSelector(item)]);
+
+    return item;
+  });
+
+  return res;
 }
 
 
