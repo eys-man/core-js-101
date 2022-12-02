@@ -620,8 +620,16 @@ function group(array, keySelector, valueSelector) {
  *   [[1, 2], [3, 4], [5, 6]], (x) => x     =>   [ 1, 2, 3, 4, 5, 6 ]
  *   ['one','two','three'], (x) => x.split('')  =>   ['o','n','e','t','w','o','t','h','r','e','e']
  */
-function selectMany(/* arr, childrenSelector */) {
-  throw new Error('Not implemented');
+function selectMany(arr, childrenSelector) {
+  const res = [];
+
+  arr.map((item) => {
+    const x = childrenSelector(item);
+    x.map((el) => res.push(el)); // перебрать полученные массивчики/строки
+    return item;
+  });
+
+  return res;
 }
 
 
@@ -637,8 +645,25 @@ function selectMany(/* arr, childrenSelector */) {
  *   ['one','two','three'], [2]       => 'three'  (arr[2])
  *   [[[ 1, 2, 3]]], [ 0, 0, 1 ]      => 2        (arr[0][0][1])
  */
-function getElementByIndexes(/* arr, indexes */) {
-  throw new Error('Not implemented');
+
+
+function getElementByIndexes(arr, indexes) {
+  let res;
+  indexes.map((item) => {
+    arr.map((it, indexArr) => {
+      if (indexArr === item) {
+        if (indexes.length > 1) {
+          let arrInd = [];
+          arrInd = indexes.slice(1);
+          res = getElementByIndexes(it, arrInd);
+        } else if (res === undefined) res = it;
+      }
+      return it;
+    });
+
+    return item;
+  });
+  return res;
 }
 
 
