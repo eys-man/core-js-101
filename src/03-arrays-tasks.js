@@ -620,6 +620,8 @@ function group(array, keySelector, valueSelector) {
  *   [[1, 2], [3, 4], [5, 6]], (x) => x     =>   [ 1, 2, 3, 4, 5, 6 ]
  *   ['one','two','three'], (x) => x.split('')  =>   ['o','n','e','t','w','o','t','h','r','e','e']
  */
+
+
 function selectMany(arr, childrenSelector) {
   const res = [];
 
@@ -649,20 +651,18 @@ function selectMany(arr, childrenSelector) {
 
 function getElementByIndexes(arr, indexes) {
   let res;
-  indexes.map((item) => {
-    arr.map((it, indexArr) => {
-      if (indexArr === item) {
-        if (indexes.length > 1) {
-          let arrInd = [];
-          arrInd = indexes.slice(1);
-          res = getElementByIndexes(it, arrInd);
-        } else if (res === undefined) res = it;
-      }
-      return it;
-    });
 
+  const ind = indexes[0]; // индекс в массиве данных в этом измерении
+  arr.map((item, index) => {
+    if (index === ind) {
+      if (indexes.length > 1) { // если еще один индекс есть в массивчике индексов, то рекурсия
+        const newIndexes = indexes.slice(1); // выбросили первый элемент из массива индексов
+        res = getElementByIndexes(item, newIndexes);
+      } else if (res === undefined) res = item;
+    }
     return item;
   });
+
   return res;
 }
 
@@ -685,8 +685,24 @@ function getElementByIndexes(arr, indexes) {
  *   [ 1, 2, 3, 4, 5, 6, 7, 8 ]   =>  [ 5, 6, 7, 8, 1, 2, 3, 4 ]
  *
  */
-function swapHeadAndTail(/* arr */) {
-  throw new Error('Not implemented');
+
+function swapHeadAndTail(arr) {
+  let res = [];
+  let indexMid;
+  let indexTail;
+  if (arr.length % 2) { // если нечетная
+    indexMid = Math.floor(arr.length / 2);
+    indexTail = indexMid + 1;
+    res = res.concat(arr.slice(indexTail));
+    res.push(arr[indexMid]);
+    res = res.concat(arr.slice(0, indexMid));
+  } else {
+    indexTail = Math.floor(arr.length / 2);
+    res = res.concat(arr.slice(indexTail));
+    res = res.concat(arr.slice(0, indexTail));
+  }
+
+  return res;
 }
 
 
