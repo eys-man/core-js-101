@@ -21,14 +21,19 @@
  *    console.log(r.getArea());   // => 200
  */
 
-class Rectangle {
-  constructor(width, height) {
-    this.width = width;
-    this.height = height;
-  }
-
-  getArea() { return this.width * this.height; }
+function Rectangle(width, height) {
+  this.width = width;
+  this.height = height;
+  this.getArea = function getArea() {
+    return (this.width * this.height);
+  };
 }
+
+/*
+Rectangle.prototype = function getArea() {
+  return (this.width * this.height);
+};
+*/
 
 
 /**
@@ -119,36 +124,151 @@ function fromJSON(proto, json) {
  *  For more examples see unit tests.
  */
 
+// class cssSelectorBuilder {
+//   constructor() {
+//     this.numId = 0;
+//     this.numPseudoClass = 0;
+//     this.str = [];
+//   }
+
+//   element(value) {
+//     return this.str.push('div').push(value);
+//   }
+
+//   id(value) {
+//     this.numId += 1;
+//     return this.str.push('#').push(value);
+//   }
+
+//   class(value) {
+//     return this.str.push('.').push(value);
+//   }
+
+//   attr(value) {
+//     return this.str.push('[').push(value).push(']');
+//   }
+
+//   pseudoClass(value) {
+//     this.numPseudoClass += 1;
+//     return this.str.push(':').push(value);
+//   }
+
+//   pseudoElement(value) {
+//     return this.str.push('::').push(value);
+//   }
+
+//   combine(selector1, combinator, selector2) {
+//     return this.element(selector1).push(combinator).push(this.element(selector2));
+//   }
+
+//   stringify() {
+//     return JSON.stringify(this.str);
+//   }
+// }
+
+class My {
+  constructor(value, ident) {
+    this.value = value;
+    this.ident = ident;
+  }
+}
+
 const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
+  element(value) {
+    if (this.ident === 'element') {
+      throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+    } else if (this.ident !== undefined) {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+    }
+    const ident = 'element';
+    return new My(value, ident);
   },
 
-  id(/* value */) {
-    throw new Error('Not implemented');
+  id(value) {
+    if (this.ident === 'id') {
+      throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+    } else if (this.ident === 'pseudo' || this.ident === 'class' || this.ident === 'attr' || this.ident === 'psclass') {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+    }
+    const ident = 'id';
+    let newValue;
+    if (this.value) {
+      newValue = `${this.value}#${value}`;
+    } else {
+      newValue = `#${value}`;
+    }
+    return new My(newValue, ident);
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  class(value) {
+    if (this.ident === 'pseudo' || this.ident === 'attr' || this.ident === 'psclass') {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+    }
+    const ident = 'class';
+    let newValue;
+    if (this.value) {
+      newValue = `${this.value}.${value}`;
+    } else {
+      newValue = `.${value}`;
+    }
+    return new My(newValue, ident);
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  attr(value) {
+    if (this.ident === 'pseudo' || this.ident === 'psclass') {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+    }
+    const ident = 'attr';
+    let newValue;
+    if (this.value) {
+      newValue = `${this.value}[${value}]`;
+    } else {
+      newValue = `[${value}]`;
+    }
+    return new My(newValue, ident);
   },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  pseudoClass(value) {
+    if (this.ident === 'pseudo') {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+    }
+    const ident = 'psclass';
+    let newValue;
+    if (this.value) {
+      newValue = `${this.value}:${value}`;
+    } else {
+      newValue = `:${value}`;
+    }
+    return new My(newValue, ident);
   },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
+  pseudoElement(value) {
+    if (this.ident === 'pseudo') {
+      throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+    }
+    const ident = 'pseudo';
+    let newValue;
+    if (this.value) {
+      newValue = `${this.value}::${value}`;
+    } else {
+      newValue = `::${value}`;
+    }
+    return new My(newValue, ident);
   },
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
+  combine(selector1, combinator, selector2) {
+    const a = selector1.stringify();
+    const b = selector2.stringify();
+    const combVal = `${a} ${combinator} ${b}`;
+    return new My(combVal, 'no');
+  },
+
+  stringify() {
+    return this.value;
   },
 };
 
+Object.assign(My.prototype, cssSelectorBuilder);
 
 module.exports = {
   Rectangle,
